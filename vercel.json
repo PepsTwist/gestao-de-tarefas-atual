@@ -10,14 +10,14 @@
       "use": "@vercel/python"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/gestao-de-tarefas/backend/main.py"
+      "source": "/api/(.*)",
+      "destination": "/gestao-de-tarefas/backend/main.py"
     },
     {
-      "src": "/(.*)",
-      "dest": "/gestao-de-tarefas/frontend/build/index.html"
+      "source": "/(.*)",
+      "destination": "/gestao-de-tarefas/frontend/build/index.html"
     }
   ]
 }
