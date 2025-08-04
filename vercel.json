@@ -1,23 +1,23 @@
 {
   "builds": [
     {
-      "src": "frontend/package.json",
+      "src": "gestao-de-tarefas/frontend/package.json",
       "use": "@vercel/static-build",
       "config": { "distDir": "build" }
     },
     {
-      "src": "backend/main.py",
+      "src": "gestao-de-tarefas/backend/main.py",
       "use": "@vercel/python"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/main.py"
+      "src": "/api/(.*)",
+      "dest": "/gestao-de-tarefas/backend/main.py"
     },
     {
-      "source": "/(.*)",
-      "destination": "/frontend/build/index.html"
+      "src": "/(.*)",
+      "dest": "/gestao-de-tarefas/frontend/build/index.html"
     }
   ]
 }
