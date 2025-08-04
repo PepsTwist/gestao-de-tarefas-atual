@@ -21,8 +21,8 @@ try:
     def handler(request, response):
         return app(request, response)
         
-except ImportError as e:
-    print(f"Error importing server: {e}")
+except ImportError as import_error:
+    print(f"Error importing server: {import_error}")
     # Create a minimal fallback app
     from fastapi import FastAPI
     app = FastAPI()
@@ -30,7 +30,7 @@ except ImportError as e:
     
     @app.get("/")
     async def root():
-        return {"error": "Server import failed", "message": str(e)}
+        return {"error": "Server import failed", "message": str(import_error)}
 
 # For local development
 if __name__ == "__main__":
