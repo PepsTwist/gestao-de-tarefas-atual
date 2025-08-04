@@ -15,6 +15,8 @@ from passlib.context import CryptContext
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from fastapi import FastAPI, Depends, HTTPException, status, APIRouter
+
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -33,9 +35,13 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # Create the main app without a prefix
 app = FastAPI()
+# ... depois de app = FastAPI()
+api_router = APIRouter()
+
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
 
 # Define Models
 class User(BaseModel):
@@ -434,7 +440,7 @@ async def get_task_comments(task_id: str, current_user: User = Depends(get_curre
     return [Comment(**comment) for comment in comments]
 
 # Include the router in the main app
-app.include_router(api_router)
+app.include_router(api_router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
