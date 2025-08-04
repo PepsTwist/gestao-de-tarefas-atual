@@ -41,16 +41,10 @@ const AuthProvider = ({ children }) => {
   // ========== INÍCIO DA CORREÇÃO ==========
   const login = async (email, password) => {
     try {
-      // O backend espera dados de formulário, não JSON
-      const formData = new URLSearchParams();
-      formData.append("username", email); // O FastAPI espera 'username'
-      formData.append("password", password);
-
-      // A rota correta é /api/token
-      const response = await axios.post(`${API}/token`, formData, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      const response = await axios.post(`${API}/auth/login`, {
+        email,
+        password,
       });
-
       const token = response.data.access_token;
 
       localStorage.setItem("token", token);
@@ -63,6 +57,7 @@ const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+
   // ========== FIM DA CORREÇÃO ==========
 
   const logout = () => {
