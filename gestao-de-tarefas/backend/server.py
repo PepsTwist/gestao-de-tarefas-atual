@@ -440,7 +440,7 @@ async def get_task_comments(task_id: str, current_user: User = Depends(get_curre
     return [Comment(**comment) for comment in comments]
 
 # Include the router in the main app
-app.include_router(api_router, prefix="/api")
+app.include_router(api_router)
 
 app.add_middleware(
     CORSMiddleware,
