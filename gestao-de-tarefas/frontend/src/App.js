@@ -4,7 +4,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import axios from "axios";
 import Components from "./Components";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL =
+  process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
 const API = `${BACKEND_URL}/api`;
 
 // Auth Context
@@ -15,10 +16,10 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       fetchCurrentUser();
     } else {
       setLoading(false);
@@ -30,32 +31,35 @@ const AuthProvider = ({ children }) => {
       const response = await axios.get(`${API}/auth/me`);
       setUser(response.data);
     } catch (error) {
-      console.error('Error fetching user:', error);
-      localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization'];
+      console.error("Error fetching user:", error);
+      localStorage.removeItem("token");
+      delete axios.defaults.headers.common["Authorization"];
     }
     setLoading(false);
   };
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post(`${API}/auth/login`, { email, password });
+      const response = await axios.post(`${API}/auth/login`, {
+        email,
+        password,
+      });
       const token = response.data.access_token;
-      
-      localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
+      localStorage.setItem("token", token);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
       await fetchCurrentUser();
       return true;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       throw error;
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
+    localStorage.removeItem("token");
+    delete axios.defaults.headers.common["Authorization"];
     setUser(null);
   };
 
@@ -63,20 +67,16 @@ const AuthProvider = ({ children }) => {
     user,
     login,
     logout,
-    loading
+    loading,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -92,7 +92,7 @@ const Login = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      window.location.href = '/';
+      window.location.href = "/";
     }
   }, [user]);
 
@@ -100,7 +100,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    
+
     try {
       await login(email, password);
     } catch (error) {
@@ -115,18 +115,22 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Entrar</h2>
-            <p className="text-gray-600">Acesse o sistema de gerenciamento de tarefas</p>
+            <p className="text-gray-600">
+              Acesse o sistema de gerenciamento de tarefas
+            </p>
           </div>
-          
+
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
               <p className="text-red-600 text-sm">{error}</p>
             </div>
           )}
-          
+
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
               <input
                 type="email"
                 required
@@ -136,9 +140,11 @@ const Login = () => {
                 placeholder="seu@email.com"
               />
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Senha</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Senha
+              </label>
               <input
                 type="password"
                 required
@@ -148,7 +154,7 @@ const Login = () => {
                 placeholder="Sua senha"
               />
             </div>
-            
+
             <button
               type="submit"
               disabled={loading}
@@ -168,7 +174,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState('dashboard'); // dashboard, tasks, kanban
+  const [view, setView] = useState("dashboard"); // dashboard, tasks, kanban
   const { user, logout } = useAuth();
 
   useEffect(() => {
@@ -181,7 +187,7 @@ const Dashboard = () => {
       const response = await axios.get(`${API}/dashboard/stats`);
       setStats(response.data);
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      console.error("Error fetching stats:", error);
     }
   };
 
@@ -191,27 +197,36 @@ const Dashboard = () => {
       setTasks(response.data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error("Error fetching tasks:", error);
       setLoading(false);
     }
   };
 
   const getUrgencyColor = (urgency) => {
     switch (urgency) {
-      case 'critica': return 'bg-red-500';
-      case 'alta': return 'bg-orange-500';
-      case 'media': return 'bg-yellow-500';
-      case 'baixa': return 'bg-green-500';
-      default: return 'bg-gray-500';
+      case "critica":
+        return "bg-red-500";
+      case "alta":
+        return "bg-orange-500";
+      case "media":
+        return "bg-yellow-500";
+      case "baixa":
+        return "bg-green-500";
+      default:
+        return "bg-gray-500";
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'concluida': return 'bg-green-500';
-      case 'em_progresso': return 'bg-blue-500';
-      case 'pendente': return 'bg-yellow-500';
-      default: return 'bg-gray-500';
+      case "concluida":
+        return "bg-green-500";
+      case "em_progresso":
+        return "bg-blue-500";
+      case "pendente":
+        return "bg-yellow-500";
+      default:
+        return "bg-gray-500";
     }
   };
 
@@ -233,37 +248,49 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-purple-600">TaskManager</h1>
+              <h1 className="text-2xl font-bold text-purple-600">
+                TaskManager
+              </h1>
               <div className="flex space-x-4">
                 <button
-                  onClick={() => setView('dashboard')}
-                  className={`nav-item ${view === 'dashboard' ? 'nav-item-active' : 'nav-item-inactive'}`}
+                  onClick={() => setView("dashboard")}
+                  className={`nav-item ${
+                    view === "dashboard"
+                      ? "nav-item-active"
+                      : "nav-item-inactive"
+                  }`}
                 >
                   Dashboard
                 </button>
                 <button
-                  onClick={() => setView('tasks')}
-                  className={`nav-item ${view === 'tasks' ? 'nav-item-active' : 'nav-item-inactive'}`}
+                  onClick={() => setView("tasks")}
+                  className={`nav-item ${
+                    view === "tasks" ? "nav-item-active" : "nav-item-inactive"
+                  }`}
                 >
                   Tarefas
                 </button>
                 <button
-                  onClick={() => setView('kanban')}
-                  className={`nav-item ${view === 'kanban' ? 'nav-item-active' : 'nav-item-inactive'}`}
+                  onClick={() => setView("kanban")}
+                  className={`nav-item ${
+                    view === "kanban" ? "nav-item-active" : "nav-item-inactive"
+                  }`}
                 >
                   Kanban
                 </button>
                 {user?.is_admin && (
                   <button
-                    onClick={() => setView('admin')}
-                    className={`nav-item ${view === 'admin' ? 'nav-item-active' : 'nav-item-inactive'}`}
+                    onClick={() => setView("admin")}
+                    className={`nav-item ${
+                      view === "admin" ? "nav-item-active" : "nav-item-inactive"
+                    }`}
                   >
                     Admin
                   </button>
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
                 {user?.name} {user?.is_admin && "(Admin)"}
@@ -281,50 +308,81 @@ const Dashboard = () => {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {view === 'dashboard' && (
+        {view === "dashboard" && (
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
-            
+
             {/* Stats Cards */}
             {stats && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="stats-card stats-card-total">
-                  <h3 className="text-sm font-medium text-white/80">Total de Tarefas</h3>
-                  <p className="text-3xl font-bold text-white">{stats.total_tasks}</p>
+                  <h3 className="text-sm font-medium text-white/80">
+                    Total de Tarefas
+                  </h3>
+                  <p className="text-3xl font-bold text-white">
+                    {stats.total_tasks}
+                  </p>
                 </div>
-                
+
                 <div className="stats-card stats-card-completed">
-                  <h3 className="text-sm font-medium text-white/80">Concluídas</h3>
-                  <p className="text-3xl font-bold text-white">{stats.completed_tasks}</p>
+                  <h3 className="text-sm font-medium text-white/80">
+                    Concluídas
+                  </h3>
+                  <p className="text-3xl font-bold text-white">
+                    {stats.completed_tasks}
+                  </p>
                 </div>
-                
+
                 <div className="stats-card bg-gradient-to-r from-blue-500 to-blue-600">
-                  <h3 className="text-sm font-medium text-white/80">Em Progresso</h3>
-                  <p className="text-3xl font-bold text-white">{stats.in_progress_tasks}</p>
+                  <h3 className="text-sm font-medium text-white/80">
+                    Em Progresso
+                  </h3>
+                  <p className="text-3xl font-bold text-white">
+                    {stats.in_progress_tasks}
+                  </p>
                 </div>
-                
+
                 <div className="stats-card bg-gradient-to-r from-red-500 to-red-600">
-                  <h3 className="text-sm font-medium text-white/80">Atrasadas</h3>
-                  <p className="text-3xl font-bold text-white">{stats.overdue_tasks}</p>
+                  <h3 className="text-sm font-medium text-white/80">
+                    Atrasadas
+                  </h3>
+                  <p className="text-3xl font-bold text-white">
+                    {stats.overdue_tasks}
+                  </p>
                 </div>
               </div>
             )}
-            
+
             {/* Recent Tasks */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Tarefas Recentes</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Tarefas Recentes
+              </h3>
               <div className="space-y-3">
                 {tasks.slice(0, 5).map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                  <div
+                    key={task.id}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
+                  >
                     <div className="flex-1">
-                      <h4 className="font-medium text-gray-900">{task.title}</h4>
+                      <h4 className="font-medium text-gray-900">
+                        {task.title}
+                      </h4>
                       <p className="text-sm text-gray-600">{task.category}</p>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getUrgencyColor(task.urgency)}`}>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getUrgencyColor(
+                          task.urgency
+                        )}`}
+                      >
                         {task.urgency}
                       </span>
-                      <span className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getStatusColor(task.status)}`}>
+                      <span
+                        className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getStatusColor(
+                          task.status
+                        )}`}
+                      >
                         {task.status}
                       </span>
                     </div>
@@ -335,27 +393,25 @@ const Dashboard = () => {
           </div>
         )}
 
-        {view === 'tasks' && (
-          <Components.TaskManager 
-            tasks={tasks} 
+        {view === "tasks" && (
+          <Components.TaskManager
+            tasks={tasks}
             onTasksChange={fetchTasks}
             getUrgencyColor={getUrgencyColor}
             getStatusColor={getStatusColor}
           />
         )}
 
-        {view === 'kanban' && (
-          <Components.KanbanBoard 
-            tasks={tasks} 
+        {view === "kanban" && (
+          <Components.KanbanBoard
+            tasks={tasks}
             onTasksChange={fetchTasks}
             getUrgencyColor={getUrgencyColor}
             getStatusColor={getStatusColor}
           />
         )}
 
-        {view === 'admin' && user?.is_admin && (
-          <Components.AdminPanel />
-        )}
+        {view === "admin" && user?.is_admin && <Components.AdminPanel />}
       </div>
     </div>
   );
@@ -386,11 +442,14 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
