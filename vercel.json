@@ -10,6 +10,11 @@
       "use": "@vercel/python"
     }
   ],
+  "functions": {
+    "gestao-de-tarefas/backend/main.py": {
+      "runtime": "@vercel/python"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
